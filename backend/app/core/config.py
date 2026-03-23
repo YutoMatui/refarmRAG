@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     GEMINI_API_KEY: str
     GEMINI_MODEL: str = "gemini-3-flash-preview"
+    GEMINI_EMBEDDING_MODEL: str = "models/embedding-001"
     NOTION_API_KEY: str
     NOTION_DATABASE_ID: str
     FRONTEND_URL: str = "http://localhost:5173"

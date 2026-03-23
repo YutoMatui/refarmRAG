@@ -38,7 +38,7 @@ def generate_answer(question: str, context: str, history: List[dict]) -> str:
 def embed_text(text: str) -> List[float]:
     _ensure_configured()
     response = genai.embed_content(
-        model="models/text-embedding-004",
+        model=settings.GEMINI_EMBEDDING_MODEL,
         content=text,
         task_type="retrieval_query",
     )
@@ -51,7 +51,7 @@ def embed_text(text: str) -> List[float]:
 def embed_document(text: str) -> List[float]:
     _ensure_configured()
     response = genai.embed_content(
-        model="models/text-embedding-004",
+        model=settings.GEMINI_EMBEDDING_MODEL,
         content=text,
         task_type="retrieval_document",
     )
