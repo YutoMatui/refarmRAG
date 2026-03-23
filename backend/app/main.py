@@ -10,12 +10,18 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Refarm AI Assistant")
 
+allowed_origins = [
+    origin.strip()
+    for origin in settings.FRONTEND_URL.split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"] ,
-    allow_headers=["*"] ,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(auth.router)
