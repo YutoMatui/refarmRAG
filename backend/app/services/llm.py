@@ -1,21 +1,22 @@
 ﻿from typing import List
-import google.generativeai as genai
+
+from google import genai
+from google.genai import types
 
 from app.core.config import settings
 
-_configured = False
+_client: genai.Client | None = None
 
 
-def _ensure_configured():
-    global _configured
-    if not _configured:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        _configured = True
+def _get_client() -> genai.Client:
+    global _client
+    if _client is None:
+        _client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    return _client
 
 
 def generate_answer(question: str, context: str, history: List[dict]) -> str:
-    _ensure_configured()
-    model = genai.GenerativeModel(settings.GEMINI_MODEL)
+    client = _get_client()
 
     history_text = "\n".join(
         [f"{item['role'].upper()}: {item['content']}" for item in history]
@@ -31,31 +32,38 @@ def generate_answer(question: str, context: str, history: List[dict]) -> str:
         "回答は日本語で簡潔にまとめてください。"
     )
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model=settings.GEMINI_MODEL,
+        contents=prompt,
+    )
     return response.text or "回答が生成できませんでした。"
 
 
 def embed_text(text: str) -> List[float]:
-    _ensure_configured()
-    response = genai.embed_content(
-        model=settings.GEMINI_EMBEDDING_MODEL,
-        content=text,
-        task_type="retrieval_query",
+    client = _get_client()
+    result = client.models.embed_content(
+        model=settings.EMBEDDING_MODEL,
+        contents=text,
+        config=types.EmbedContentConfig(
+            task_type="RETRIEVAL_QUERY",
+            output_dimensionality=settings.EMBEDDING_DIM,
+        ),
     )
-    embedding = response.get("embedding")
-    if not embedding:
+    if not result.embeddings:
         raise ValueError("Embedding failed")
-    return embedding
+    return list(result.embeddings[0].values)
 
 
 def embed_document(text: str) -> List[float]:
-    _ensure_configured()
-    response = genai.embed_content(
-        model=settings.GEMINI_EMBEDDING_MODEL,
-        content=text,
-        task_type="retrieval_document",
+    client = _get_client()
+    result = client.models.embed_content(
+        model=settings.EMBEDDING_MODEL,
+        contents=text,
+        config=types.EmbedContentConfig(
+            task_type="RETRIEVAL_DOCUMENT",
+            output_dimensionality=settings.EMBEDDING_DIM,
+        ),
     )
-    embedding = response.get("embedding")
-    if not embedding:
+    if not result.embeddings:
         raise ValueError("Embedding failed")
-    return embedding
+    return list(result.embeddings[0].values)

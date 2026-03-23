@@ -11,8 +11,18 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || "Request failed");
+    let errorMessage = "Request failed";
+    try {
+      const body = await response.json();
+      errorMessage = body.detail || body.message || JSON.stringify(body);
+    } catch {
+      try {
+        errorMessage = await response.text() || errorMessage;
+      } catch {
+        // レスポンスボディが読めない場合はデフォルトメッセージを使用
+      }
+    }
+    throw new Error(String(errorMessage));
   }
 
   return response.json();
