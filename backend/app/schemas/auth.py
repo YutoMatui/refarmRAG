@@ -3,7 +3,7 @@
 
 class AuthRequest(BaseModel):
     email: EmailStr
-    password: str = Field(..., max_length=72)
+    password: str = Field(..., min_length=1, max_length=128)
 
 
 class TokenResponse(BaseModel):

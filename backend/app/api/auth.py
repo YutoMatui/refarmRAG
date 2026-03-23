@@ -8,14 +8,9 @@ from app.schemas.auth import AuthRequest, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-def _validate_password_length(password: str) -> None:
-    if len(password.encode("utf-8")) > 72:
-        raise HTTPException(status_code=400, detail="Password is too long")
-
 
 @router.post("/register", response_model=TokenResponse)
 def register(payload: AuthRequest, db: Session = Depends(get_db)):
-    _validate_password_length(payload.password)
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -31,7 +26,6 @@ def register(payload: AuthRequest, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login(payload: AuthRequest, db: Session = Depends(get_db)):
-    _validate_password_length(payload.password)
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
