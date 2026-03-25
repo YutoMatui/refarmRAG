@@ -17,8 +17,10 @@ class SessionOut(BaseModel):
 
 
 class ReferenceOut(BaseModel):
+    id: int
     title: str
     url: str
+    excerpt: Optional[str] = None
 
 
 class MessageOut(BaseModel):

@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     NOTION_SYNC_MAX_RETRIES: int = 5
     NOTION_SYNC_DELAY_SECONDS: float = 0.0
     NOTION_SYNC_MAX_BLOCKS_PER_PAGE: int = 0
+    NOTION_SYNC_COMMIT_EVERY: int = 5
+    NOTION_SYNC_RESUME: bool = False
+    NOTION_SYNC_CHECKPOINT_PATH: str = ".notion_sync_checkpoint.json"
+    NOTION_CHUNK_SIZE: int = 800
     FRONTEND_URL: str = "http://localhost:5173"
     EMBEDDING_DIM: int = 768
 

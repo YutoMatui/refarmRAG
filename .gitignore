@@ -11,3 +11,4 @@ __pycache__/
 .env
 frontend/.env
 backend/.env
+backend/.notion_sync_checkpoint.json
