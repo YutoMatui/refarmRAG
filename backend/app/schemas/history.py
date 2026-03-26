@@ -17,7 +17,7 @@ class SessionOut(BaseModel):
 
 
 class ReferenceOut(BaseModel):
-    id: int
+    id: Optional[int] = None
     title: str
     url: str
     excerpt: Optional[str] = None
